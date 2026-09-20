@@ -38,8 +38,8 @@ const features = [
 const products = [
   {
     no: "01",
-    name: "toooony",
-    title: "AI 車載助理",
+    name: "AI 車載助理",
+    title: "",
     desc: "不只是導航，而是懂你的 AI 夥伴。",
     tags: ["AI語音", "智慧導航", "行車夥伴"],
     image: "from-slate-900 via-slate-800 to-ink",
