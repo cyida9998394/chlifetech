@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# subscriber data (contains personal info, keep out of git)
+/data/subscribers.json
+
 # vercel
 .vercel
 
