@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Logo from "@/components/logo";
 import MobileNav from "@/components/mobile-nav";
+import AuthStatus from "@/components/auth-status";
 import { ArrowRightIcon, CartIcon, SearchIcon } from "@/components/icons";
 
 const navLinks = [
@@ -36,6 +37,7 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3 sm:gap-5">
+          <AuthStatus />
           <button
             aria-label="搜尋"
             className="hidden text-ink/70 transition-colors hover:text-ink md:block"
