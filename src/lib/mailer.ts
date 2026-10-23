@@ -22,12 +22,10 @@ export async function sendMail({ to, subject, text, html }: {
 }) {
   const mailer = getTransporter();
   if (!mailer) {
-    // 開發時沒設定 Gmail 也能測試：信件內容改印在終端機
-    if (process.env.NODE_ENV !== "production") {
-      console.log(`\n[未設定 Gmail，信件改印在這裡] 寄給 ${to}：${subject}\n${text}\n`);
-      return;
-    }
-    throw new Error("缺少 GMAIL_USER 或 GMAIL_APP_PASSWORD 環境變數。");
+    // 還沒設定 Gmail（開發中或線上暫時）：不報錯，信件內容改寫在紀錄裡（本機是終端機、線上是 Vercel 的 Logs）
+    // 設定好 GMAIL_USER 和 GMAIL_APP_PASSWORD 之後就會真的寄出
+    console.warn(`[未設定 Gmail，信件改寫在紀錄] 寄給 ${to}：${subject}\n${text}`);
+    return;
   }
 
   await mailer.sendMail({
