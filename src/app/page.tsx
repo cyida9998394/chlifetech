@@ -11,6 +11,8 @@ import HandDrawnUnderline from "@/components/hand-drawn-underline";
 import NewsletterForm from "@/components/newsletter-form";
 import Parallax from "@/components/parallax";
 import Reveal from "@/components/reveal";
+import ColorDots from "@/components/color-dots";
+import { getHomeProducts, type HomeProduct } from "@/lib/home-products";
 
 const features = [
   {
@@ -35,46 +37,50 @@ const features = [
   },
 ];
 
-const products = [
-  {
-    no: "01",
-    name: "AI 車載助理",
-    title: "",
-    desc: "不只是導航，而是懂你的 AI 夥伴。",
-    tags: ["AI語音", "智慧導航", "行車夥伴"],
-    image: "from-slate-900 via-slate-800 to-ink",
-    photo: "/products/more-to-come.webp",
-  },
-  {
-    no: "02",
-    name: "墨水屏鑰匙圈",
-    title: "",
-    desc: "把喜歡的畫面，帶在身邊。",
-    tags: ["個性化顯示", "NFC應用", "輕巧隨身"],
-    image: "from-amber-100 via-orange-50 to-stone-200",
-    photo: "/products/more-to-come.webp",
-  },
-  {
-    no: "03",
-    name: "強力隨身電風扇",
-    title: "",
-    desc: "小巧強勁，隨時享受涼感。",
-    tags: ["大風力", "輕量便攜", "長效續航"],
-    image: "from-slate-100 via-white to-slate-200",
-    photo: "/products/more-to-come.webp",
-  },
-  {
-    no: "04",
-    name: "更多生活科技",
-    title: "",
-    desc: "持續探索中，敬請期待。",
-    tags: ["創新選物", "未來更多可能", "敬請期待"],
-    image: "from-indigo-50 via-slate-100 to-mist",
-    photo: "/products/more-to-come.webp",
-  },
-];
+// 產品卡片的圖片區塊：照片、編號、名稱和一句話介紹
+function ProductCardImage({ p }: { p: HomeProduct }) {
+  return (
+    <div
+      className={`relative flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br p-4 ${p.image}`}
+    >
+      {p.photo && (
+        <Image
+          src={p.photo}
+          alt={p.name}
+          fill
+          // 後台填的外部圖片網址不經過 Next.js 圖片最佳化
+          unoptimized={p.photo.startsWith("https://")}
+          sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+          className="object-cover"
+        />
+      )}
+      <div className="relative flex items-start justify-between">
+        <span className="text-xs font-semibold tracking-widest text-white/80 drop-shadow-sm">
+          {p.no}
+        </span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm transition-transform group-hover:translate-x-0.5">
+          <ArrowRightIcon className="h-4 w-4" />
+        </span>
+      </div>
+      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+      <div className="relative">
+        {p.title && (
+          <p className="text-xs font-medium text-white/70">
+            {p.name}
+          </p>
+        )}
+        <p className="mt-1 text-base font-bold text-white">
+          {p.title || p.name}
+        </p>
+        <p className="mt-1 text-sm text-white/70">{p.desc}</p>
+      </div>
+    </div>
+  );
+}
 
-export default function Home() {
+export default async function Home() {
+  const products = await getHomeProducts();
+
   return (
     <>
       {/* Hero */}
@@ -177,39 +183,14 @@ export default function Home() {
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {products.map((p, i) => (
               <Reveal key={p.no} delay={i * 100} className="group flex flex-col">
-                <div
-                  className={`relative flex aspect-[4/5] flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br p-4 ${p.image}`}
-                >
-                  {p.photo && (
-                    <Image
-                      src={p.photo}
-                      alt={p.name}
-                      fill
-                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-                      className="object-cover"
-                    />
-                  )}
-                  <div className="relative flex items-start justify-between">
-                    <span className="text-xs font-semibold tracking-widest text-white/80 drop-shadow-sm">
-                      {p.no}
-                    </span>
-                    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-ink shadow-sm transition-transform group-hover:translate-x-0.5">
-                      <ArrowRightIcon className="h-4 w-4" />
-                    </span>
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="relative">
-                    {p.title && (
-                      <p className="text-xs font-medium text-white/70">
-                        {p.name}
-                      </p>
-                    )}
-                    <p className="mt-1 text-base font-bold text-white">
-                      {p.title || p.name}
-                    </p>
-                    <p className="mt-1 text-sm text-white/70">{p.desc}</p>
-                  </div>
-                </div>
+                {/* 資料庫的產品點圖片會進到產品頁 */}
+                {p.href ? (
+                  <Link href={p.href} aria-label={`查看「${p.name}」的產品介紹`} className="block rounded-2xl">
+                    <ProductCardImage p={p} />
+                  </Link>
+                ) : (
+                  <ProductCardImage p={p} />
+                )}
                 <div className="mt-4">
                   <div className="flex flex-wrap gap-2">
                     {p.tags.map((tag) => (
@@ -221,6 +202,22 @@ export default function Home() {
                       </span>
                     ))}
                   </div>
+                  {p.colors && p.colors.length > 0 && (
+                    <div className="mt-3">
+                      <ColorDots variants={p.colors} size="md" />
+                    </div>
+                  )}
+                  {/* 官網只做產品介紹，要購買就連到蝦皮 */}
+                  {p.shopeeUrl && (
+                    <a
+                      href={p.shopeeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-orange-600 px-4 py-1.5 text-sm font-medium text-orange-700 transition-colors hover:bg-orange-700 hover:text-white"
+                    >
+                      到蝦皮購買 <span aria-hidden>↗</span>
+                    </a>
+                  )}
                 </div>
               </Reveal>
             ))}

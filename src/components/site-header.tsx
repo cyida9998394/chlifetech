@@ -2,7 +2,6 @@ import Link from "next/link";
 import Logo from "@/components/logo";
 import MobileNav from "@/components/mobile-nav";
 import AuthStatus from "@/components/auth-status";
-import { ArrowRightIcon, CartIcon, SearchIcon } from "@/components/icons";
 
 const navLinks = [
   { label: "首頁", href: "/", active: true },
@@ -36,27 +35,8 @@ export default function SiteHeader() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3 sm:gap-5">
+        <div className="flex items-center gap-3">
           <AuthStatus />
-          <button
-            aria-label="搜尋"
-            className="hidden text-ink/70 transition-colors hover:text-ink md:block"
-          >
-            <SearchIcon className="h-5 w-5" />
-          </button>
-          <button
-            aria-label="購物車"
-            className="hidden text-ink/70 transition-colors hover:text-ink md:block"
-          >
-            <CartIcon className="h-5 w-5" />
-          </button>
-          <Link
-            href="#products"
-            className="group inline-flex items-center gap-2 rounded-full bg-ink px-3.5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/85 sm:px-5"
-          >
-            <span className="hidden sm:inline">探索更好的生活</span>
-            <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
           <MobileNav navLinks={navLinks} />
         </div>
       </div>

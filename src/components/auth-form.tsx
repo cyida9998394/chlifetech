@@ -5,11 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AuthShell from "@/components/auth-shell";
 import PasswordStrength from "@/components/password-strength";
+import PasswordInput from "@/components/password-input";
 import { passwordError } from "@/lib/password-policy";
 
 type Mode = "login" | "register";
 
-const RESEND_COOLDOWN_SECONDS = 60;
+export const RESEND_COOLDOWN_SECONDS = 60;
 
 const copy = {
   login: {
@@ -34,13 +35,13 @@ const copy = {
   },
 };
 
-const inputClass =
+export const inputClass =
   "rounded-xl border border-line bg-white/90 px-4 py-2.5 text-ink outline-none transition-colors focus:border-ink";
-const labelClass = "flex flex-col gap-1.5 text-sm font-medium text-ink/80";
-const buttonClass =
+export const labelClass = "flex flex-col gap-1.5 text-sm font-medium text-ink/80";
+export const buttonClass =
   "mt-2 rounded-full bg-ink px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-ink/85 disabled:opacity-60";
 
-async function postJSON(url: string, body: unknown) {
+export async function postJSON(url: string, body: unknown) {
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -82,8 +83,11 @@ export default function AuthForm({ mode }: { mode: Mode }) {
     setLoading(false);
   }
 
+  // 登入後回到原本的頁面（例如按「加入購物車」時被導來登入），只接受站內路徑
   function finishLogin() {
-    router.push("/");
+    const next = new URLSearchParams(window.location.search).get("next") ?? "";
+    const safe = next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : "/";
+    router.push(safe);
     router.refresh();
   }
 
@@ -235,8 +239,7 @@ export default function AuthForm({ mode }: { mode: Mode }) {
         </label>
         <label className={labelClass}>
           密碼
-          <input
-            type="password"
+          <PasswordInput
             required
             autoComplete={mode === "register" ? "new-password" : "current-password"}
             value={password}
@@ -245,6 +248,14 @@ export default function AuthForm({ mode }: { mode: Mode }) {
           />
           {mode === "register" && <PasswordStrength password={password} />}
         </label>
+        {mode === "login" && (
+          <Link
+            href="/forgot-password"
+            className="-mt-2 self-end text-xs text-ink/60 underline underline-offset-4 hover:text-ink"
+          >
+            忘記密碼？
+          </Link>
+        )}
         {error && <p className="text-sm text-red-600">{error}</p>}
         <button type="submit" disabled={loading} className={buttonClass}>
           {loading ? t.loading : t.submit}
